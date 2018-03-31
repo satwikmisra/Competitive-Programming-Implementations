@@ -14,6 +14,10 @@ struct BIT{
             pos+=lsb(pos);
         }
     }
+    void reset(int pos){
+        int val=rangesum(pos,pos);
+        update(pos,-val);
+    }
     int sum(int pos){
         int ret=0;
         while(pos>0){
