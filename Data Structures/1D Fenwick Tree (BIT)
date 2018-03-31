@@ -1,0 +1,28 @@
+struct BIT{
+    vector<int>bit;
+    int size;
+    BIT(int sz){
+        bit.resize(sz+1);
+        size=sz;
+    }
+    int lsb(int num){
+        return num & -num;
+    }
+    void update(int pos, int val){
+        while(pos<=size){
+            bit[pos]+=val;
+            pos+=lsb(pos);
+        }
+    }
+    int sum(int pos){
+        int ret=0;
+        while(pos>0){
+            ret+=bit[pos];
+            pos-=lsb(pos);
+        }
+        return ret;
+    }
+    int rangesum(int a, int b){
+        return sum(b)-sum(a-1);
+    }
+};
