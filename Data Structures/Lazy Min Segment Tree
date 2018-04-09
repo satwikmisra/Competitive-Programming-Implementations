@@ -1,0 +1,57 @@
+struct segtree{
+    vector<int>tree;
+    vector<int>lazy;
+    vector<int>lo;
+    vector<int>hi;
+    segtree(int sz){
+        tree.resize(4*sz+1);
+        lazy.resize(4*sz+1);
+        lo.resize(4*sz+1);
+        hi.resize(4*sz+1);
+        init(1,0,sz-1);
+    }
+    void init(int node, int a, int b){
+        lo[node]=a; hi[node]=b;
+        if(a==b) return;
+        int split=(a+b)/2;
+        init(2*node,a,split);
+        init(2*node+1,split+1,b);
+    }
+    void update(int a, int b, int val){
+        hupdate(1,a,b,val);
+    }
+    int query(int a, int b){
+        return hquery(1,a,b);
+    }
+    void prop(int node){
+        lazy[2*node]+=lazy[node];
+        lazy[2*node+1]+=lazy[node];
+        lazy[node]=0;
+    }
+    void change(int node){
+        tree[node]=min(tree[2*node+1] + lazy[2*node+1], tree[2*node] + lazy[2*node]);
+    }
+    void hupdate(int node, int a, int b, int val){
+        if(b<lo[node] || hi[node]<a) return;
+        if(a<=lo[node] && hi[node]<=b){
+            lazy[node]+=val;
+            return;
+        }
+        prop(node);
+        hupdate(2*node,a,b,val);
+        hupdate(2*node+1,a,b,val);
+        change(node);
+    }
+    int hquery(int node, int a, int b){
+        if(b<lo[node] || hi[node]<a) return INT_MAX;
+        if(a<=lo[node] && hi[node]<=b){
+            return tree[node]+lazy[node];
+        }
+        prop(node);
+        int left=hquery(2*node, a, b);
+        int right=hquery(2*node+1,a,b);
+        change(node);
+        return min(left, right);
+    }
+
+};
