@@ -1,0 +1,97 @@
+typedef long long ll;
+
+struct segtree{
+    vector<ll>sum;
+    vector<ll>lazy;
+    vector<ll>lazym;
+    vector<ll>lo;
+    vector<ll>hi;
+    segtree(ll sz){
+        lazy.resize(4*sz+1);
+        lo.resize(4*sz+1);
+        hi.resize(4*sz+1);
+        sum.resize(4*sz+1);
+        lazym.resize(4*sz+1);
+        fill(lazym.begin(), lazym.end(),1);
+        init(1,0,sz-1);
+    }
+    void init(ll node, ll a, ll b){
+        lo[node]=a; hi[node]=b;
+        if(a==b) return;
+        int split=(a+b)/2;
+        init(2*node,a,split);
+        init(2*node+1,split+1,b);
+    }
+    void prop(ll node){
+        if(lazym[node]!=1){
+            sum[node]*=lazym[node];
+            if(hi[node]!=lo[node]){
+                lazym[2*node]*=lazym[node];
+                lazy[2*node]*=lazym[node];
+                lazym[2*node+1]*=lazym[node];
+                lazy[2*node+1]*=lazym[node];
+            }
+            lazym[node]=1;
+        }
+        if(lazy[node]!=0){
+            sum[node]+= (hi[node]-lo[node]+1)*lazy[node];
+            if(hi[node]!=lo[node]){
+                lazy[2*node]+=lazy[node];
+                lazy[2*node+1]+=lazy[node];
+            }
+            lazy[node]=0;
+        }
+    }
+    void hadd(ll node, ll a, ll b, ll val){
+        prop(node);
+        if(b<lo[node] ||  a>hi[node]) return;
+        if(lo[node]==hi[node]){
+            sum[node]+=val;
+            return;
+        }
+        if(a<=lo[node] && b>=hi[node]){
+            sum[node]+= (hi[node]-lo[node]+1)*val;
+            sum[2*node]+=val;
+            sum[2*node+1]+=val;
+            return;
+        }
+        hadd(2*node,a,b,val);
+        hadd(2*node+1,a,b,val);
+        sum[node]=sum[2*node+1]+sum[2*node];
+    }
+    void add(ll a, ll b, ll val){
+        hadd(1,a,b,val);
+    }
+    void mult(ll a, ll b, ll val){
+        hmult(1,a,b,val);
+    }
+    void hmult(ll node, ll a, ll b, ll val){
+        prop(node);
+        if(b<lo[node] || a>hi[node]) return;
+        if(lo[node]==hi[node]){
+            sum[node]*=val;
+            return;
+        }
+        if(a<=lo[node] && b>=hi[node]){
+            sum[node]*=val;
+            lazym[2*node]*=val;
+            lazy[2*node]*=val;
+            lazym[2*node+1]*=val;
+            lazy[2*node+1]*=val;
+            return;
+        }
+        hmult(2*node,a,b,val);
+        hmult(2*node+1,a,b,val);
+        sum[node]=sum[2*node]+sum[2*node+1];
+    }
+    ll query(ll a, ll b){
+        return hquery(1,a,b);
+    }
+    ll hquery(ll node, ll a, ll b){
+        prop(node);
+        if(b<lo[node] || a>hi[node]) return 0;
+        if(lo[node]==hi[node]) return sum[node];
+        if(a<=lo[node] && b>=hi[node]) return sum[node];
+        return hquery(2*node,a,b) + hquery(2*node+1,a,b);
+    }
+};
