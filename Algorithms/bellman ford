@@ -1,0 +1,33 @@
+const int MAXN=1000;
+const int inf=1e18;
+#define ll long long
+
+ll n;
+vector<pair<pair<ll,ll>,ll> >edges;
+ll dist[MAXN+1];
+bool neg[MAXN+1];
+ll source=0;
+
+void bf(){
+    edges.clear();
+    for(int i=0;i<n;i++){
+        ll u, v, w; cin>>u>>v>>w;
+        edges.push_back({{u,v},w});
+    }
+    for(int i=0;i<=MAXN;i++) {dist[i]=inf; neg[i]=false;}
+    dist[source]=0;
+    for(int i=1;i<n;i++){
+        for(int j=0;j<edges.size();j++){
+            if(dist[edges[j].first.first]!=inf) dist[edges[j].first.second]=min(dist[edges[j].first.second],dist[edges[j].first.first]+edges[j].second);
+        }
+    }
+    for(int j=0;j<edges.size();j++){
+        if(dist[edges[j].first.first]+edges[j].second<dist[edges[j].first.second]) neg[edges[j].first.second]=true;
+    }
+    for(int i=1;i<n;i++){
+        for(int j=0;j<edges.size();j++){
+            if(neg[edges[j].first.first]) neg[edges[j].first.second]=true;
+        }
+    }
+
+}
