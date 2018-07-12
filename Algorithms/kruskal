@@ -1,0 +1,15 @@
+//requires the dsu implementation
+
+vector< pair< ll , pair<ll,ll> > > adj;
+vector< pair< ll , pair<ll,ll> > > mst;
+
+void kruskal(){
+    sort(adj.begin(),adj.end());
+    uinit();
+    for(int i=0;i<adj.size();i++){
+        if(!connected(adj[i].second.first,adj[i].second.second)){
+            umerge(adj[i].second.first,adj[i].second.second);
+            mst.push_back(make_pair(adj[i].first,make_pair(adj[i].second.first,adj[i].second.second)));
+        }
+    }
+}
