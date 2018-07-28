@@ -1,6 +1,5 @@
-const int MAXSZ=10000;
-
 int n;
+const int MAXSZ=10000;
 vector<int> height, euler, first, segtree;
 vector<bool>visited;
 vector<int> adj[MAXSZ];
@@ -55,4 +54,8 @@ int lca(int u, int v){
     int left=first[u]; int right=first[v];
     if(left>right) swap(left, right);
     return query(1,0,euler.size()-1,left,right);
+}
+
+int dist(int u, int v){
+    return ( height[u] + height[v] - 2*height[lca(u,v)] );
 }
